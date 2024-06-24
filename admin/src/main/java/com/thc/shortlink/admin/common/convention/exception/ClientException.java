@@ -8,6 +8,8 @@ import com.thc.shortlink.admin.common.convention.errorcode.IErrorCode;
  */
 public class ClientException extends AbstractException {
 
+
+
     public ClientException(IErrorCode errorCode) {
         this(null, null, errorCode);
     }
