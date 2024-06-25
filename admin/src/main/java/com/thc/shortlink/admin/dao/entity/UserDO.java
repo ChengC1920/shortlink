@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.thc.shortlink.admin.common.database.BaseDO;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +14,10 @@ import java.util.Date;
  */
 @Data
 @TableName("t_user")
-public class UserDO extends BaseDO {
+public class UserDO extends BaseDO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * id
      */
