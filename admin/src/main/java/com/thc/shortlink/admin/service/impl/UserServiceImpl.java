@@ -101,9 +101,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         if (userDO == null) {
             throw new ClientException(USER_NULL);
         }
-        StpUtil.login(userLoginReqDTO.getUsername());
+        StpUtil.login(userDO.getId());
+        StpUtil.getSession().set("userInfo", userDO);
         UserLoginRespDTO userLoginRespDTO = new UserLoginRespDTO();
-        StpUtil.getTokenValue();
         userLoginRespDTO.setToken(StpUtil.getTokenValue());
         return userLoginRespDTO;
     }
