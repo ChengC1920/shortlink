@@ -1,10 +1,12 @@
 package com.thc.shortlink.admin.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.thc.shortlink.admin.common.biz.user.UserContext;
 import com.thc.shortlink.admin.dao.entity.GroupDO;
+import com.thc.shortlink.admin.dao.entity.UserDO;
 import com.thc.shortlink.admin.dao.mapper.GroupMapper;
 import com.thc.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.thc.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +27,8 @@ import java.util.List;
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
     @Override
     public void saveGroup(String groupName) {
+        UserDO userInfo = (UserDO) StpUtil.getSession().get("userInfo");
+        String username = userInfo.getUsername();
         String gid;
         do {
             gid = RandomGenerator.generateRandom();
@@ -32,6 +37,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .gid(gid)
                 .sortOrder(0)
                 .name(groupName)
+                .username(username)
                 .build();
         baseMapper.insert(groupDD);
     }
@@ -64,7 +70,14 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public void updateGroup(ShortLinkGroupUpdateReqDTO requestParam) {
-
+        UserDO userInfo = (UserDO) StpUtil.getSession().get("userInfo");
+        LambdaQueryWrapper<GroupDO> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(GroupDO::getUsername, userInfo.getUsername())
+                .eq(GroupDO::getGid, requestParam.getGid())
+                .eq(GroupDO::getDelFlag, 0);
+        GroupDO groupDO = new GroupDO();
+        groupDO.setName(requestParam.getName());
+        baseMapper.update(groupDO, lambdaQueryWrapper);
     }
 
     @Override
