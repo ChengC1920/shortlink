@@ -92,7 +92,17 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public void sortGroup(List<ShortLinkGroupSortReqDTO> requestParam) {
-
+        UserDO userInfo = (UserDO) StpUtil.getSession().get("userInfo");
+        requestParam.forEach(each -> {
+            GroupDO groupDO = GroupDO.builder()
+                    .sortOrder(each.getSortOrder())
+                    .build();
+            LambdaQueryWrapper<GroupDO> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(GroupDO::getUsername, userInfo.getUsername())
+                    .eq(GroupDO::getGid, each.getGid())
+                    .eq(GroupDO::getDelFlag, 0);
+            baseMapper.update(groupDO, lambdaQueryWrapper);
+        });
     }
 
 
