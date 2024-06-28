@@ -82,7 +82,12 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
 
     @Override
     public void deleteGroup(String gid) {
-
+        UserDO userInfo = (UserDO) StpUtil.getSession().get("userInfo");
+        LambdaQueryWrapper<GroupDO> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(GroupDO::getUsername, userInfo.getUsername())
+                .eq(GroupDO::getGid, gid)
+                .eq(GroupDO::getDelFlag, 0);
+        baseMapper.delete(lambdaQueryWrapper);
     }
 
     @Override
